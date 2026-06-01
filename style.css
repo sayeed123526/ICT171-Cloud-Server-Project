@@ -1,7 +1,4 @@
-/* ============================================================
-   Stay Safe Online — cybersecurity awareness site
-   Sayeed Bin Akhter · ICT171 · CC BY 4.0
-   ============================================================ */
+
 
 :root {
   --ink:      #16181d;
@@ -167,3 +164,11 @@ code {
   .nav-links { display: none; }
   .hero-card { min-width: 100%; }
 }
+
+/* ---------- Threat illustrations ---------- */
+.threat-figure {
+  margin: 0 0 30px; padding: 22px; background: var(--paper-2);
+  border: 1px solid var(--line); border-radius: var(--radius); text-align: center;
+}
+.threat.alt .threat-figure { background: #ffffff; }
+.threat-figure svg { width: 100%; max-width: 330px; height: auto; }
