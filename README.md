@@ -1,139 +1,61 @@
 # ICT171 Cloud Server Project
 
-**Student Name:** Sayeed Bin Akhter  
-**Student Number:** 35820304  
-**GitHub Repository:** https://github.com/sayeed123526/ICT171-Cloud-Server-Project  
-**Live Website:** https://projectofict171.com  
-**Global IP Address:** 20.70.130.74  
-## Project Overview
+**Student:** Sayeed Bin Akhter
+**Student number:** 35820304
+**Unit:** ICT171 — Introduction to Server Environments and Architectures
 
-This project documents the provisioning and deployment of a cloud-based web server
-for ICT171 at Murdoch University, Semester 1 2026. The server hosts a Cybersecurity
-Awareness website accessible at https://projectofict171.com. The server was built
-using Microsoft Azure as an Infrastructure as a Service (IaaS) platform, with full
-SSH access to an Ubuntu 24.04 LTS virtual machine. All software was installed and
-configured manually from the command line.
+**Live site:** https://projectofict171.com
+**Public IP:** 20.70.130.74
 
 ---
 
-## Infrastructure
+## About
 
-| Component        | Detail                          |
-|------------------|---------------------------------|
-| Cloud Provider   | Microsoft Azure (Student)       |
-| VM Name          | ict171Sayeed                    |
-| Public IP        | 20.70.130.74                    |
-| Internal IP      | 10.0.0.4                        |
-| Operating System | Ubuntu 24.04.4 LTS              |
-| Web Server       | Apache2                         |
-| SSL Certificate  | Let's Encrypt (Certbot)         |
-| Domain           | projectofict171.com             |
+A public-facing **Cybersecurity Awareness** website running on a Microsoft Azure
+virtual machine (Infrastructure as a Service). The server was provisioned and
+configured by hand over SSH — Ubuntu Server 24.04 LTS, Apache2, a custom HTML/CSS
+website, a registered domain with DNS A records, and HTTPS via Let's Encrypt. The
+full, replicable build documentation is in `docs/report.pdf`.
 
----
+## Stack
 
-## How to Replicate This Server
+| Layer       | Choice                                         |
+|-------------|------------------------------------------------|
+| Cloud       | Microsoft Azure (Azure for Students)           |
+| OS          | Ubuntu Server 24.04 LTS                        |
+| Web server  | Apache2                                         |
+| TLS         | Let's Encrypt (Certbot)                         |
+| Domain/DNS  | projectofict171.com → 20.70.130.74 (A records) |
 
-### 1. Create Azure VM
+## Repository structure
 
-- Log into https://portal.azure.com
-- Create Ubuntu 24.04 LTS VM, region: Australia East
-- Download SSH key as `ict171azurekey.pem`
-- Add inbound port rules: 22, 80, 443
-
-### 2. Connect via SSH
-ssh azureuser@20.70.130.74 -i .\ict171azurekey.pem
 ```
-
-### 3. Update System
-sudo apt update
-sudo apt upgrade -y
-```
-
-### 4. Install Apache2
-sudo apt install apache2 -y
-sudo systemctl enable apache2
-sudo systemctl start apache2
-### 5. Configure Firewall 
-sudo ufw allow OpenSSH
-sudo ufw allow "Apache Full"
-sudo ufw enable
-```
-
-### 6. Stop nginx if Running (port conflict fix)
-
-sudo systemctl stop nginx
-sudo systemctl disable nginx
-sudo systemctl start apache2
-### 7. Deploy Website Files
-
-sudo nano /var/www/html/index.html
-sudo nano /var/www/html/style.css
-sudo chown www-data:www-data /var/www/html/index.html /var/www/html/style.css
-sudo chmod 644 /var/www/html/index.html /var/www/html/style.css
-### 8. Configure Apache VirtualHost
-sudo nano /etc/apache2/sites-available/projectofict171.com.conf
-apache
-<VirtualHost *:80>
-    ServerAdmin admin@projectofict171.com
-    ServerName projectofict171.com
-    ServerAlias www.projectofict171.com
-    DocumentRoot /var/www/html
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-sudo a2ensite projectofict171.com.conf
-sudo a2dissite 000-default.conf
-sudo systemctl reload apache2
-### 9. Set DNS A Records at Registrar
-
-| Type | Host | Value         |
-|------|------|---------------|
-| A    | @    | 20.70.130.74  |
-| A    | www  | 20.70.130.74  |
-
-### 10. Enable HTTPS
-
-sudo apt install certbot python3-certbot-apache -y
-sudo certbot --apache -d projectofict171.com -d www.projectofict171.com
-
-### 11. Run Health Check Script
-chmod +x healthcheck.sh
-sudo bash healthcheck.sh
-
-## Repository Structure
-
 ICT171-Cloud-Server-Project/
-├── README.md ← This file
-├── index.html ← Main website page
-├── style.css ← Website stylesheet
-├── healthcheck.sh ← Bash server health check script
+├── README.md          # this file
+├── index.html         # website
+├── style.css          # website styles
+├── healthcheck.sh     # server health-check script
 └── docs/
-└── report.pdf ← Assignment submission document
+    └── report.pdf     # full build documentation
+```
 
-## Script — healthcheck.sh
+## The website
 
-This Bash script checks whether Apache2 is running and whether the website
-returns a successful HTTP 200 response. It logs each result with a timestamp
-to `/var/log/healthcheck.log` and also prints to the terminal.
+Plain-English guidance on the three most common online threats — **phishing**,
+**weak passwords**, and **malware** — each with practical advice, plus a quick
+safety checklist. Content licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
-Output can be independently verified by visiting https://projectofict171.com
-and confirming the page loads with a valid HTTPS padlock.
+## healthcheck.sh
 
----
+A Bash monitoring script that checks the Apache service (auto-restarting it if it
+has stopped), the website's HTTP response, disk and memory usage, and the days
+remaining on the SSL certificate, logging each run with a timestamp to
+`/var/log/healthcheck.log`. See the script header for usage and cron scheduling.
 
-## References
+## Attribution
 
-[1] Microsoft, "Use SSH keys to connect to Linux VMs," Microsoft Learn, 2024.
-    https://learn.microsoft.com/en-us/azure/virtual-machines/linux/ssh-from-windows
-
-[2] Canonical Ltd., "Install and Configure Apache," Ubuntu Tutorials, 2024.
-    https://ubuntu.com/tutorials/install-and-configure-apache
-
-[3] DigitalOcean, "How To Set Up Apache Virtual Hosts on Ubuntu," 2022.
-    https://www.digitalocean.com/community/tutorials/how-to-set-up-apache-virtual-hosts-on-ubuntu-20-04
-
-[4] Electronic Frontier Foundation, "Certbot: Apache on Ubuntu," 2024.
-    https://certbot.eff.org/
-
-[5] Murdoch University Library, "Referencing," 2024.
-    http://library.murdoch.edu.au/Students/Referencing/
+Build steps were adapted from the official Microsoft Azure, Apache, Certbot and
+DigitalOcean documentation, cited in `docs/report.pdf`. The website content and
+design, the health-check script, and the documentation are my own work, produced
+with some AI assistance which is acknowledged in the report.
