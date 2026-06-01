@@ -2,7 +2,7 @@
 
 **Student:** Sayeed Bin Akhter
 **Student number:** 35820304
-**Unit:** ICT171 — Introduction to Server Environments and Architectures
+**Unit:** ICT171 - Introduction to Server Environments and Architectures
 
 **Live site:** https://projectofict171.com
 **Public IP:** 20.70.130.74
